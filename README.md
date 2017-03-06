@@ -1,4 +1,5 @@
-# TwitterPA: A Dataset of Predicate-Argument Coreference from Twitter
+# TwitterPA
+## A Dataset of Predicate-Argument Coreference from Twitter
 
 This is the code used in the paper:
 
