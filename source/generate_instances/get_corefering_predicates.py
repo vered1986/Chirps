@@ -1,23 +1,16 @@
-"""
-author: Vered Shwartz
-
-Receives a file with propositions extracted from same event tweets, and aligns predicates / arguments based on string 
-matching / WordNET synset matching of two items for the proposition.
-"""
 import codecs
 
-import numpy as np
-
-from munkres import *
 from docopt import docopt
 from fuzzywuzzy import fuzz
 from spacy.en import English
 from num2words import num2words
+from collections import defaultdict
 from nltk.corpus import wordnet as wn
 from guess_language import guessLanguage
 
+nlp = English()
 
-nlp = English(ner=False)
+MAX_PRED_FOR_ARG_PAIR = 5
 
 
 def main():
@@ -68,7 +61,7 @@ def main():
         # 0 - tweet_id, 1 - sentence, 2 - predicate, 3 - lemmatized predicate, 4 - "A0", 5 - A0, 6 - "A1", 7 - A1
         propositions = [(item[0], item[1], item[2][:item[2].index('{a1}') + 4].strip(),
                          item[3][:item[3].index('{a1}') + 4].strip(), item[5], item[7])
-                        for item in propositions if len(item) >= 7]
+                        for item in propositions if len(item) >= 8 and '{a1}' in item[2]]
 
         # Remove non English sentences, those with short arguments and trivial / too general predicates
         propositions = [(tweet_id, sent, surface_pred, pred, a0, a1) for (tweet_id, sent, surface_pred, pred, a0, a1)
@@ -79,29 +72,61 @@ def main():
     predicate_alignments = pair_aligned_propositions(propositions, pronouns)
 
     # Keep one tweet id pair and one (s,v,o) tuple for each instance
-    filtered = { tuple(sorted([tweet_id1, tweet_id2])) :
-                     (tweet_id1, sent1, sf_pred1, pred1, sent1_a0, sent1_a1,
-                      tweet_id2, sent2, sf_pred2, pred2, sent2_a0, sent2_a1)
-                 for (tweet_id1, sent1, sf_pred1, pred1, sent1_a0, sent1_a1,
-                      tweet_id2, sent2, sf_pred2, pred2, sent2_a0, sent2_a1)
-                 in predicate_alignments }.values()
+    filtered = {tuple(sorted([tweet_id1, tweet_id2])):
+                    (tweet_id1, sent1, sf_pred1, pred1, sent1_a0, sent1_a1,
+                     tweet_id2, sent2, sf_pred2, pred2, sent2_a0, sent2_a1)
+                for (tweet_id1, sent1, sf_pred1, pred1, sent1_a0, sent1_a1,
+                     tweet_id2, sent2, sf_pred2, pred2, sent2_a0, sent2_a1)
+                in predicate_alignments}.values()
 
-    filtered = { (tuple([pred1, sent1_a0, sent1_a1]), tuple([pred2, sent2_a0, sent2_a1])) :
-                     (tweet_id1, sent1, sf_pred1, pred1, sent1_a0, sent1_a1,
-                      tweet_id2, sent2, sf_pred2, pred2, sent2_a0, sent2_a1)
-                 for (tweet_id1, sent1, sf_pred1, pred1, sent1_a0, sent1_a1,
-                      tweet_id2, sent2, sf_pred2, pred2, sent2_a0, sent2_a1)
-                 in filtered }.values()
+    filtered = {(tuple([pred1, sent1_a0, sent1_a1]), tuple([pred2, sent2_a0, sent2_a1])):
+                    (tweet_id1, sent1, sf_pred1, pred1, sent1_a0, sent1_a1,
+                     tweet_id2, sent2, sf_pred2, pred2, sent2_a0, sent2_a1)
+                for (tweet_id1, sent1, sf_pred1, pred1, sent1_a0, sent1_a1,
+                     tweet_id2, sent2, sf_pred2, pred2, sent2_a0, sent2_a1)
+                in filtered}.values()
+
+    print 'Extracted %d instances' % len(filtered)
 
     # Write the predicate alignments to the output file
+    out_file = out_file.replace('.prop', '')
+
     if len(filtered) > 0:
         with codecs.open(out_file, 'w', 'utf-8') as f_out:
             for prop_pair in filtered:
                 try:
-                    date = tweets_file[tweets_file.index('/') + 1 if '/' in tweets_file else 0 : tweets_file.index('.')]
+                    date = tweets_file[tweets_file.index('/') + 1 if '/' in tweets_file else 0:]
                     print >> f_out, date + '\t' + '\t'.join(prop_pair)
                 except:
                     print 'error'
+
+
+def get_candidate_pairs(propositions, pronouns):
+
+    global nlp
+
+    # Remove propositions with argument pronouns
+    propositions = [(tweet_id, sent, sf_pred, pred, a0, a1) for (tweet_id, sent, sf_pred, pred, a0, a1) in propositions
+                    if len(pronouns.intersection(set([a0, a1]))) == 0 and len(sent) > 10]
+
+    print 'Extracted %d propositions' % len(propositions)
+
+    # Get candidates by lexical overlap in arguments
+    candidates_by_args = defaultdict(set)
+
+    [candidates_by_args[w].add(i) for i, (tweet_id, sent, sf_pred, pred, a0, a1) in enumerate(propositions)
+     for w in a0.split() if not nlp.is_stop(w)]
+
+    [candidates_by_args[w].add(i) for i, (tweet_id, sent, sf_pred, pred, a0, a1) in enumerate(propositions)
+     for w in a1.split() if not nlp.is_stop(w)]
+
+    # Get pairwise candidates from all lists
+    candidates = set([propositions[i] + propositions[j] for lst in candidates_by_args.values()
+                      for i in lst for j in lst if i != j])
+
+    print 'Extracted %d candidates' % len(candidates)
+
+    return candidates
 
 
 def pair_aligned_propositions(propositions, pronouns):
@@ -111,71 +136,60 @@ def pair_aligned_propositions(propositions, pronouns):
     :return: a list of aligned_prop
     """
     predicate_alignments = []
-    num_free_pred, num_aligned_pred = 0, 0
 
-    for i, (tweet_id1, sent1, sf_pred1, pred1, s0_a0, s0_a1) in enumerate(propositions):
-        for j, (tweet_id2, sent2, sf_pred2, pred2, s1_a0, s1_a1) in enumerate(propositions):
+    candidates = get_candidate_pairs(propositions, pronouns)
 
-            # Same predicate and arguments or sentences are too similar
-            if (pred1 in pred2 or pred2 in pred1) and \
-                ((((s0_a0 in s1_a0) or (s1_a0 in s0_a0)) and (s0_a1 in s1_a1) or (s1_a1 in s0_a1)) or
-                     (((s0_a1 in s1_a0) or (s1_a0 in s0_a1)) and (s0_a0 in s1_a1) or (s1_a1 in s0_a0))) or \
-                            fuzz.token_sort_ratio(sent1, sent2) >= 70:
-                continue
+    for (tweet_id1, sent1, sf_pred1, pred1, s0_a0, s0_a1, tweet_id2, sent2, sf_pred2, pred2, s1_a0, s1_a1) in candidates:
 
-            # If an argument subject is a pronoun, don't align predicates
-            if len(pronouns.intersection(set([s0_a0, s0_a1, s1_a0, s1_a1]))) > 0:
-                continue
+        # Same tweet
+        if fuzz.token_sort_ratio(sent1, sent2) >= 95:
+            continue
 
-            # Same arguments?
-            is_eq_a0_a0, is_eq_a1_a1, is_eq_a0_a1, is_eq_a1_a0 = \
-                is_eq_arg(s0_a0, s1_a0), is_eq_arg(s0_a1, s1_a1), is_eq_arg(s0_a0, s1_a1), is_eq_arg(s0_a1, s1_a0)
+        # Same predicates?
+        if is_eq_preds(pred1, pred2):
+            continue
 
-            # Are arguments aligned?
-            is_aligned_a0_a0 = is_eq_a0_a0 or is_aligned_arg(s0_a0, s1_a0)
-            is_aligned_a1_a1 = is_eq_a1_a1 or is_aligned_arg(s0_a1, s1_a1)
-            is_aligned_a0_a1 = is_eq_a0_a1 or is_aligned_arg(s0_a0, s1_a1)
-            is_aligned_a1_a0 = is_eq_a1_a0 or is_aligned_arg(s0_a1, s1_a0)
+        # Same arguments?
+        is_eq_a0_a0, is_eq_a1_a1, is_eq_a0_a1, is_eq_a1_a0 = \
+            is_eq_arg(s0_a0, s1_a0), is_eq_arg(s0_a1, s1_a1), is_eq_arg(s0_a0, s1_a1), is_eq_arg(s0_a1, s1_a0)
 
-            # Same predicates?
-            is_eq_pred = is_eq_preds(pred1, pred2)
+        # Are arguments aligned?
+        is_aligned_a0_a0 = is_eq_a0_a0 or is_aligned_arg(s0_a0, s1_a0)
+        is_aligned_a1_a1 = is_eq_a1_a1 or is_aligned_arg(s0_a1, s1_a1)
+        is_aligned_a0_a1 = is_eq_a0_a1 or is_aligned_arg(s0_a0, s1_a1)
+        is_aligned_a1_a0 = is_eq_a1_a0 or is_aligned_arg(s0_a1, s1_a0)
 
-            # Are predicates aligned?
-            is_aligned_pred = is_aligned_preds(pred1, pred2)
+        # Are predicates aligned?
+        is_aligned_pred = is_aligned_preds(pred1, pred2)
 
-            # 1) the predicates are not equal, one argument-pair is aligned/equal, the other argument-pair is equal =>
-            # predicates are aligned
-            if not is_eq_pred and ((is_eq_a0_a0 and is_aligned_a1_a1) or (is_aligned_a0_a0 and is_eq_a1_a1)):
-                predicate_alignments.append((tweet_id1, sent1, sf_pred1, pred1, s0_a0, s0_a1,
-                                             tweet_id2, sent2, sf_pred2, pred2, s1_a0, s1_a1))
-                num_free_pred += 1
-                continue
+        # 1) the predicates are not equal, one argument-pair is aligned/equal, the other argument-pair is equal =>
+        # predicates are aligned
+        if (is_eq_a0_a0 and is_aligned_a1_a1) or (is_aligned_a0_a0 and is_eq_a1_a1):
+            predicate_alignments.append((tweet_id1, sent1, sf_pred1, pred1, s0_a0, s0_a1,
+                                         tweet_id2, sent2, sf_pred2, pred2, s1_a0, s1_a1))
+            continue
 
-            # 2) all three items are aligned
-            if not is_eq_pred and is_aligned_pred and is_aligned_a0_a0 and is_aligned_a1_a1:
-                predicate_alignments.append((tweet_id1, sent1, sf_pred1, pred1, s0_a0, s0_a1,
-                                             tweet_id2, sent2, sf_pred2, pred2, s1_a0, s1_a1))
-                num_aligned_pred += 1
-                continue
+        # 2) all three items are aligned
+        if is_aligned_pred and is_aligned_a0_a0 and is_aligned_a1_a1:
+            predicate_alignments.append((tweet_id1, sent1, sf_pred1, pred1, s0_a0, s0_a1,
+                                         tweet_id2, sent2, sf_pred2, pred2, s1_a0, s1_a1))
+            continue
 
-            # Same as before, but with reversed arguments
-            if not is_eq_pred and ((is_eq_a0_a1 and is_aligned_a1_a0) or (is_aligned_a0_a1 and is_eq_a1_a0)):
-                new_pred2 = pred2.replace('{a0}', 'ARG0').replace('{a1}', '{a0}').replace('ARG0', '{a1}')
-                new_sf_pred2 = sf_pred2.replace('{a0}', 'ARG0').replace('{a1}', '{a0}').replace('ARG0', '{a1}')
-                predicate_alignments.append((tweet_id1, sent1, sf_pred1, pred1, s0_a0, s0_a1,
-                                             tweet_id2, sent2, new_sf_pred2, new_pred2, s1_a1, s1_a0))
-                num_free_pred += 1
-                continue
+        # Same as before, but with reversed arguments
+        if (is_eq_a0_a1 and is_aligned_a1_a0) or (is_aligned_a0_a1 and is_eq_a1_a0):
+            new_pred2 = pred2.replace('{a0}', 'ARG0').replace('{a1}', '{a0}').replace('ARG0', '{a1}')
+            new_sf_pred2 = sf_pred2.replace('{a0}', 'ARG0').replace('{a1}', '{a0}').replace('ARG0', '{a1}')
+            predicate_alignments.append((tweet_id1, sent1, sf_pred1, pred1, s0_a0, s0_a1,
+                                         tweet_id2, sent2, new_sf_pred2, new_pred2, s1_a1, s1_a0))
+            continue
 
-            if not is_eq_pred and is_aligned_pred and is_aligned_a0_a1 and is_aligned_a1_a0:
-                new_pred2 = pred2.replace('{a0}', 'ARG0').replace('{a1}', '{a0}').replace('ARG0', '{a1}')
-                new_sf_pred2 = sf_pred2.replace('{a0}', 'ARG0').replace('{a1}', '{a0}').replace('ARG0', '{a1}')
-                predicate_alignments.append((tweet_id1, sent1, sf_pred1, pred1, s0_a0, s0_a1,
-                                             tweet_id2, sent2, new_sf_pred2, new_pred2, s1_a1, s1_a0))
-                num_aligned_pred += 1
-                continue
+        if is_aligned_pred and is_aligned_a0_a1 and is_aligned_a1_a0:
+            new_pred2 = pred2.replace('{a0}', 'ARG0').replace('{a1}', '{a0}').replace('ARG0', '{a1}')
+            new_sf_pred2 = sf_pred2.replace('{a0}', 'ARG0').replace('{a1}', '{a0}').replace('ARG0', '{a1}')
+            predicate_alignments.append((tweet_id1, sent1, sf_pred1, pred1, s0_a0, s0_a1,
+                                         tweet_id2, sent2, new_sf_pred2, new_pred2, s1_a1, s1_a0))
+            continue
 
-    print num_free_pred, num_aligned_pred
     return predicate_alignments
 
 
@@ -204,6 +218,7 @@ def is_eq_preds(p1, p2):
     :param y: the second predicate
     :return: Whether they are equal
     """
+    global nlp
 
     # Levenshtein distance mostly
     if fuzz.ratio(p1, p2) >= 90:
@@ -211,7 +226,7 @@ def is_eq_preds(p1, p2):
 
     # Same verb
     if p1.replace('{a0} ', '{a0} be ') == p2 or p1.replace('{a0} ', '{a0} have ') == p2 or \
-        p2.replace('{a0} ', '{a0} be ') == p1 or p2.replace('{a0} ', '{a0} have ') == p1:
+                    p2.replace('{a0} ', '{a0} be ') == p1 or p2.replace('{a0} ', '{a0} have ') == p1:
         return True
 
     return False
@@ -262,39 +277,14 @@ def is_aligned_arg(x, y):
         return True
 
     # More than one word - align words from x with words from y
-    cost = -np.vstack([np.array([len([w for w in s1.intersection(s2) if not nlp.is_stop(w)])
-                                 for s1 in x_synonyms])
-                       for s2 in y_synonyms])
-    m = Munkres()
-    cost = pad_to_square(cost)
-    indices = m.compute(cost)
+    intersections = [len([w for w in s1.intersection(s2) if not nlp.is_stop(w)])
+                     for s1 in x_synonyms for s2 in y_synonyms]
 
-    # Compute the average score of the alignment
-    average_score = np.mean([-cost[row, col] for row, col in indices])
-
-    if average_score >= 0.75:
+    if len([intersection_len for intersection_len in intersections if intersection_len > 0]) >= \
+                    0.75 * max(len(x_synonyms), len(y_synonyms)):
         return True
 
     return False
-
-
-def pad_to_square(mat):
-    """
-    Pad a numpy array/matrix to be square
-    :param mat: the numpy array
-    :return: the padded matrix
-    """
-    new_m = mat
-
-    # More rows than cols
-    if mat.shape[0] > mat.shape[1]:
-        new_m = np.hstack((new_m, np.zeros((mat.shape[0], mat.shape[0] - mat.shape[1]))))
-
-    # More cols than cols
-    elif mat.shape[1] > mat.shape[0]:
-        new_m = np.vstack((new_m, np.zeros((mat.shape[1] - mat.shape[0], mat.shape[1]))))
-
-    return new_m
 
 
 if __name__ == '__main__':

@@ -9,6 +9,7 @@ import os
 import math
 import time
 import codecs
+
 import twitter
 
 
@@ -76,47 +77,45 @@ def reset_sleep_time(api):
     return sleep_time, reset_time
 
 
-def load_dataset(dataset_file):
+def load_resource(resource_file):
     """
-    Load a dataset from a file
-    :param dataset_file: the dataset file
-    :return: the dataset
+    Load a resource from a file
+    :param resource_file: the resource file
+    :return: the resource
     """
-    with codecs.open(dataset_file, 'r', 'utf-8') as f_in:
-        dataset = [tuple(line.strip().split('\t')) for line in f_in]
+    with codecs.open(resource_file, 'r', 'utf-8') as f_in:
+        resource = [tuple(line.strip().split('\t')) for line in f_in]
 
-    return dataset
+    return resource
 
 
-def get_tweet_ids(dataset):
+def get_tweet_ids(resource):
     """
-    Returns all the tweet IDs in the dataset
-    :param dataset: the dataset
-    :return: all the tweet IDs in the dataset
+    Returns all the tweet IDs in the resource
+    :param resource: the resource
+    :return: all the tweet IDs in the resource
     """
     tweet_ids = set([tweet_id1 for (tweet_id1, sf_pred1, pred1, sent1_a0, sent1_a1,
-                                tweet_id2, sf_pred2, pred2, sent2_a0, sent2_a1, label)
-                 in dataset] + \
+                                    tweet_id2, sf_pred2, pred2, sent2_a0, sent2_a1) in resource] + \
                 [tweet_id2 for (tweet_id1, sf_pred1, pred1, sent1_a0, sent1_a1,
-                                tweet_id2, sf_pred2, pred2, sent2_a0, sent2_a1, label)
-                 in dataset])
+                                tweet_id2, sf_pred2, pred2, sent2_a0, sent2_a1) in resource])
 
     return tweet_ids
 
 
-def expand_positive(dataset, sent_by_tweet_id):
+def expand_resource(resource, sent_by_tweet_id):
     """
-    Add the tweets to the dataset
-    :param dataset: the original dataset (without tweets)
+    Add the tweets to the resource
+    :param resource: the original resource (without tweets)
     :param sent_by_tweet_id: dictionary of tweet by tweet ID
-    :return: the expanded dataset (with tweets)
+    :return: the expanded resource (with tweets)
     """
-    expanded_dataset = [(tweet_id1, sent_by_tweet_id[tweet_id1], sf_pred1, pred1, sent1_a0, sent1_a1,
-                         tweet_id2, sent_by_tweet_id[tweet_id2], sf_pred2, pred2, sent2_a0, sent2_a1, label)
+    expanded_resource = [(tweet_id1, sent_by_tweet_id[tweet_id1], sf_pred1, pred1, sent1_a0, sent1_a1,
+                         tweet_id2, sent_by_tweet_id[tweet_id2], sf_pred2, pred2, sent2_a0, sent2_a1)
                         for (tweet_id1, sf_pred1, pred1, sent1_a0, sent1_a1,
-                             tweet_id2, sf_pred2, pred2, sent2_a0, sent2_a1, label) in dataset]
+                             tweet_id2, sf_pred2, pred2, sent2_a0, sent2_a1) in resource]
 
-    return expanded_dataset
+    return expanded_resource
 
 
 def save_to_file(dataset, dataset_file):
@@ -139,7 +138,8 @@ def clean_tweet(tweet):
     """
 
     # Retweet
-    tweet = re.sub(r'^rt [^\s]+ : ', '', tweet)
+    tweet = tweet.lower()
+    tweet = re.sub(r'^rt [^\s]+\s?: ', '', tweet)
 
     tokens = tweet.split()
     cleaned_tokens = []

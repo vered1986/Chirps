@@ -23,7 +23,7 @@ sys.path.append('../')
 
 from glob import glob
 from docopt import docopt
-from parsers.spacy_wrapper import spacy_wrapper
+from spacy_wrapper import spacy_wrapper
 
 
 logging.basicConfig(level = logging.INFO)
