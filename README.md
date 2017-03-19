@@ -37,7 +37,7 @@ The resource can be found [here](http://u.cs.biu.ac.il/~nlp/resources/downloads/
    get_corefering_predicates.py [tweets_file] [out_file]
    ```
 
-5. To package the dataset:
+5. To package the resource:
 
     * Generate the full resource file (remove the date field):
      ```
