@@ -1,53 +1,49 @@
-# TwitterPA
-## A Dataset of Predicate-Argument Coreference from Twitter
+# P^3DB
+## Predicate Paraphrase Database
 
 This is the code used in the paper:
 
-<b>"In Other Words: Analyzing Lexical Variability in Event Coreference"</b><br/>
+<b>"A Large Automatically-Constructed Resource of Predicate Paraphrases"</b><br/>
 Vered Shwartz, Gabriel Stanovsky and Ido Dagan. (TBD).
 
-The dataset can be found [here](http://u.cs.biu.ac.il/~nlp/resources/downloads/twitter-pa/) (TBD).
+The resource can be found [here](http://u.cs.biu.ac.il/~nlp/resources/downloads/p3db/) (TBD).
 
 ***
 
-<b>To create a similar dataset:</b>
+<b>To create a similar resource:</b>
 
-1. Create a directory with tweet files (e.g. a different directory for each day), each file in the following format: `tweet_id\ttweet`
+1. Obtain news tweets:
+   Create a directory with tweet files (e.g. a different directory for each day), each file in the following format: `tweet_id\ttweet`.
+   One way to get these are by querying the [Twitter Search API](https://dev.twitter.com/rest/public/search) for news:
+
+   ```
+   get_news_tweets_stream.py --consumer_key=<consumer_key> --consumer_secret=<consumer_secret>
+        --access_token=<access_token> --access_token_secret=<access_token_secret> [--until=<until>]
+   ```
+   
+   where `consumer_key`, `consumer_secret`, `access_token` and `access_token_secret` are obtained by registering to the Twitter API as an app, in [here](https://apps.twitter.com/). 
+   The optional argument `until` is a date in the format `YYYY/MM/dd` if you'd like to retrieve tweets only until this date. The Search API only supports up to one week ago. If this argument is not specified, it will retrieve current tweets. This script will save the tweets in a file named by the date they were created at.
 
 2. Extract propositions: 
    ```
-   prop_extraction --in=[tweet_folder] --out=[prop_folder]`
+   prop_extraction --in=[tweet_folder] --out=[prop_folder]
    ```
    
 3. Generate positive instances: for each proposition file, run: 
    ```
    get_corefering_predicates.py [tweets_file] [out_file]
    ```
-   
-4. Generate negative instances: 
-   ```
-   create_negative_sampling_svo_instances.py [positive_instances_file] [negative_instances_file] 
-   [actions_log_file] [ratio_neg_pos]
-   ```
-   
-  * `positive_instances_file` is the concatenated output from step 3, a file of positive instances with dates.
-  * `negative_instances_file` is the output file containing the negative instances.
-  * `actions_log_file` is the output file documenting the changes done to the tweets (needed when downloading the tweets again from Twitter).
-  * `ratio_neg_pos` is the required ratio of negative to positive instances (e.g. 4).
 
 5. To package the dataset:
 
-  1. Generate the full dataset file:
+  1. Generate the full resource file (remove the date field):
      ```
      cut -f2,3,4,5,6,7,8,9,10,11,12,13 positive/* > positive_instances.tsv
-     sed -i "s/$/\tTrue/" positive_instances.tsv
-     sed -i "s/$/\tFalse/" negative_instances.tsv
-     cat positive_instances.tsv negative_instances.txt | shuf > dataset.tsv
      ```
 
   2. Generate a version without the tweets (only tweet IDs):
      ```
-     cut -f1,3,4,5,6,7,9,10,11,12,13 dataset.tsv > dataset_without_tweets.tsv
+     cut -f1,3,4,5,6,7,9,10,11,12,13 positive_instances.tsv > positive_instances_without_tweets.tsv
      ```
 
   3. Generate the script to download the full dataset from Twitter:
@@ -55,14 +51,11 @@ The dataset can be found [here](http://u.cs.biu.ac.il/~nlp/resources/downloads/t
      create_download_dataset_script.py dataset.tsv [negative_instances_log_file] [out_script_file]
      ```
 
-6. To download the full dataset:
+6. To download the full resource:
 
-  1. Register to the [Twitter API](https://apps.twitter.com/) and obtain consumer key, consumer secret, access token and access token secret.
+   ```
+   expand_resource.py --resource_file=<resource_file> --consumer_key=<consumer_key>
+        --consumer_secret=<consumer_secret> --access_token=<access_token> --access_token_secret=<access_token_secret>
+   ```
 
-  2. Download the full dataset using the script `[out_script_file]` (e.g. `expand_dataset.py`) with the following arguments:
-
-    * `--dataset_file` the dataset file without tweets (`dataset_without_tweets.tsv` or the dataset file in the TwitterPA dataset you downloaded)
-    * `--consumerkey` the Twitter app consumer key
-    * `--consumersecret` the Twitter app consumer secret
-    * `--accesstoken` the Twitter app API token
-    * `--accesstokensecret` the Twitter app API token secret
+    where `--resource_file` is the path to the resource file without tweets (e.g. `resource_without_tweets.tsv` or the file in the packaged resource you downloaded).
