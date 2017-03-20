@@ -3,10 +3,10 @@ import time
 import codecs
 import datetime
 
-sys.path.append('../common')
+sys.path.append('../')
 
-from common import *
 from docopt import docopt
+from common.common import *
 from TwitterSearch import *
 
 
@@ -27,30 +27,30 @@ def main():
 
         This script will save the tweets in a file named by the date they were created at.
 
-        Usage: get_news_tweets_stream.py --consumer_key=<consumer_key> --consumer_secret=<consumer_secret>
-        --access_token=<access_token> --access_token_secret=<access_token_secret> [--until=<until>]
+        Usage: get_news_tweets_stream.py <consumer_key> <consumer_secret> <access_token> <access_token_secret> [<until>]
 
-        --consumer_key          Consumer key for the Twitter API
-        --consumer_secret       Consumer secret for the Twitter API
-        --access_token          Access key token for the Twitter API
-        --access_token_secret   Access token secret for the Twitter API
-        --until                 (Optional): date in the format YYYY/MM/dd. Retrieve tweets only until this date.
-                                If this argument is not specified, it will retrieve current tweets.
-                                The Search API only supports up to one week ago.
+        Argumments:
+            consumer_key  Consumer key for the Twitter API
+            consumer_secret  Consumer secret for the Twitter API
+            access_token  Access key token for the Twitter API
+            access_token_secret  Access token secret for the Twitter API
+            until  (Optional): date in the format YYYY/MM/dd. Retrieve tweets only until this date.
+            If this argument is not specified, it will retrieve current tweets.
+            The Search API only supports up to one week ago.
     """)
 
-    consumer_key = args['--consumer_key']
-    consumer_secret = args['--consumer_secret']
-    access_token = args['--access_token']
-    access_token_secret = args['--access_token_secret']
+    consumer_key = args['<consumer_key>']
+    consumer_secret = args['<consumer_secret>']
+    access_token = args['<access_token>']
+    access_token_secret = args['<access_token_secret>']
 
     tso = TwitterSearchOrder()
     tso.set_keywords(['.'])
     tso.set_language('en')
 
     # Set until date
-    if args['--until']:
-        year, month, day = map(int, args['--until'].split('/'))
+    if args['<until>']:
+        year, month, day = map(int, args['-until'].split('/'))
         out_tweet_file = 'news_stream/%d_%02d_%02d' % (year, month, day - 1)
         tso.set_until(datetime.date(year, month, day))
     else:

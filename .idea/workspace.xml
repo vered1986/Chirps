@@ -1,20 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c5247d28-44eb-4cfb-a850-76080f80c583" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/source/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/source/common/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/source/generate_instances/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/source/get_news_tweets/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/source/proposition_extraction/__init__.py" />
-      <change type="DELETED" beforePath="C:\git\TwitterPA\source\create_download_dataset_script.py" afterPath="" />
-      <change type="DELETED" beforePath="C:\git\TwitterPA\source\negative_sampling.py" afterPath="" />
-      <change type="MOVED" beforePath="C:\git\TwitterPA\source\common.py" afterPath="$PROJECT_DIR$/source/common/common.py" />
-      <change type="MOVED" beforePath="C:\git\TwitterPA\source\get_corefering_predicates.py" afterPath="$PROJECT_DIR$/source/generate_instances/get_corefering_predicates.py" />
-      <change type="MOVED" beforePath="C:\git\TwitterPA\source\parsers\spacy_wrapper.py" afterPath="$PROJECT_DIR$/source/proposition_extraction/spacy_wrapper.py" />
-      <change type="MOVED" beforePath="C:\git\TwitterPA\source\prop_extraction.py" afterPath="$PROJECT_DIR$/source/proposition_extraction/prop_extraction.py" />
-      <change type="MOVED" beforePath="C:\git\TwitterPA\source\twitter.py" afterPath="$PROJECT_DIR$/source/common/twitter.py" />
-    </list>
+    <list default="true" id="c5247d28-44eb-4cfb-a850-76080f80c583" name="Default" comment="" />
     <ignored path="TwitterPA.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -34,10 +21,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="get_news_tweets_stream.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="get_news_tweets_stream.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/source/get_news_tweets/get_news_tweets_stream.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.24637681">
+            <state vertical-scroll-proportion="0.0">
               <caret line="23" column="33" selection-start-line="22" selection-start-column="8" selection-end-line="23" selection-end-column="33" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
@@ -85,6 +72,18 @@
               <caret line="30" column="60" selection-start-line="30" selection-start-column="60" selection-end-line="30" selection-end-column="60" />
               <folding>
                 <element signature="e#166#175#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="convert_eecb_dataset.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../ecod/source/datasets/eecb/convert_eecb_dataset.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.1516165">
+              <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="34" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -527,10 +526,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/source/get_news_tweets/get_news_tweets_stream.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.24637681">
+        <state vertical-scroll-proportion="0.0">
           <caret line="23" column="33" selection-start-line="22" selection-start-column="8" selection-end-line="23" selection-end-column="33" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../ecod/source/datasets/eecb/convert_eecb_dataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.1516165">
+          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="34" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
