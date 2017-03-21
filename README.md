@@ -41,7 +41,7 @@ The resource can be found [here](http://u.cs.biu.ac.il/~nlp/resources/downloads/
 
     * Generate the full resource file (remove the date field):
      ```
-     cut -f2,3,4,5,6,7,8,9,10,11,12,13 positive/* > positive_instances.tsv
+     cut -f2:13 positive/* > positive_instances.tsv
      ```
 
     * Generate a version without the tweets (only tweet IDs):
