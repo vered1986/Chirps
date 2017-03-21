@@ -51,10 +51,10 @@ def main():
     # Set until date
     if args['<until>']:
         year, month, day = map(int, args['-until'].split('/'))
-        out_tweet_file = 'news_stream/%d_%02d_%02d' % (year, month, day - 1)
+        out_tweet_file = 'news_stream/tweets/%d_%02d_%02d' % (year, month, day - 1)
         tso.set_until(datetime.date(year, month, day))
     else:
-        out_tweet_file = 'news_stream/' + time.strftime('%Y_%m_%d')
+        out_tweet_file = 'news_stream/tweets/' + time.strftime('%Y_%m_%d')
 
 
     sleep_for = 10

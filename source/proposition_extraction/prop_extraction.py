@@ -214,6 +214,8 @@ def run_single_file(input_fn, output_fn, prop_ex):
             tweet_id = None
             if len(data) == 2:
                 tweet_id, sent = data
+            elif len(data) == 4:
+                date, tweet_id, user, sent = data
             else:
                 # Not at tweet, just fill in the id with a place holder
                 tweet_id = 'NONE'
