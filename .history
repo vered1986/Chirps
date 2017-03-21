@@ -1,0 +1,3 @@
+2017-03-21.18-49-32.te-srv4.cs.biu.ac.il git config --global user.email vered1986@gmail.com
+2017-03-21.18-49-41.te-srv4.cs.biu.ac.il git config --global user.name vered1986
+2017-03-21.18-49-47.te-srv4.cs.biu.ac.il git config --global credential.helper cache
