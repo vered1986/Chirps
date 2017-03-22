@@ -3,7 +3,7 @@
 
 This is the code used in the paper:
 
-<b>"A Large Automatically-Constructed Resource of Predicate Paraphrases"</b><br/>
+<b>"An Ever-growing Resource of Predicate Paraphrases"</b><br/>
 Vered Shwartz, Gabriel Stanovsky and Ido Dagan. (TBD).
 
 The resource can be found [here](http://u.cs.biu.ac.il/~nlp/resources/downloads/p3db/) (TBD).
