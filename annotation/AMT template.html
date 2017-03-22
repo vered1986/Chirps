@@ -1,0 +1,81 @@
+<html lang="en">
+<head>
+  <link href="https://s3.amazonaws.com/mturk-public/bs30/css/bootstrap.css" rel="stylesheet" media="screen">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+</head>
+
+<body>
+	<section class="container" id="Other" style="margin-bottom:15px; padding: 10px 10px; font-family: Verdana, Geneva, sans-serif; color:#333333; font-size:0.9em;">
+
+	<div class="row col-xs-12 col-md-12"><!-- Instructions -->
+	<div class="panel panel-primary">
+	<div class="panel-heading"><strong>Instructions</strong></div>
+
+	<div class="panel-body"> 
+	<p><strong>
+		In this task, you are presented with two texts. You should decide whether the two texts describe the same event.
+		For example: <font color='#d95f02'>Intel</font> <font color="#1b9e77">purchased</font> <font color='#7570b3'>Mobileye</font> describes the same event as <font color='#7570b3'>Mobileye</font> <font color="#1b9e77">sold to</font> <font color='#d95f02'>Intel</font>. In your answer, please focus on the action (e.g. <font color="#1b9e77">purchase</font>) and ignore small problems with the arguments.
+    </p>
+	</div>
+	</div>
+	<!-- End Instructions -->
+	<!-- Content Body -->
+
+	<section>
+	<fieldset>
+		
+		<label>1. Do <font color="#1b9e77">${inst1_1}</font> and <font color="#1b9e77">${inst1_2}</font> describe roughly the same event?</label>
+		
+		<table border="0" cellspacing="0" cellpadding="5" style="font-family: Verdana, Geneva, sans-serif; font-size:1em;">
+			<tr><td><input type="radio" name="ans1" value="yes" checked="checked" /> Yes</td></tr>
+			<tr><td><input type="radio" name="ans1" value="no" /> No</td></tr>
+		</table>
+		<br/>
+		
+		<label>2. Do <font color="#1b9e77">${inst2_1}</font> and <font color="#1b9e77">${inst2_2}</font> describe roughly the same event?</label>
+		
+		<table border="0" cellspacing="0" cellpadding="5" style="font-family: Verdana, Geneva, sans-serif; font-size:1em;">
+			<tr><td><input type="radio" name="ans2" value="yes" checked="checked" /> Yes</td></tr>
+			<tr><td><input type="radio" name="ans2" value="no" /> No</td></tr>
+		</table>
+		<br/>
+		
+		<label>3. Do <font color="#1b9e77">${inst3_1}</font> and <font color="#1b9e77">${inst3_2}</font> describe roughly the same event?</label>
+		
+		<table border="0" cellspacing="0" cellpadding="5" style="font-family: Verdana, Geneva, sans-serif; font-size:1em;">
+			<tr><td><input type="radio" name="ans3" value="yes" checked="checked" /> Yes</td></tr>
+			<tr><td><input type="radio" name="ans3" value="no" /> No</td></tr>
+		</table>
+		<br/>
+		
+		<label>4. Do <font color="#1b9e77">${inst4_1}</font> and <font color="#1b9e77">${inst4_2}</font> describe roughly the same event?</label>
+		
+		<table border="0" cellspacing="0" cellpadding="4" style="font-family: Verdana, Geneva, sans-serif; font-size:1em;">
+			<tr><td><input type="radio" name="ans4" value="yes" checked="checked" /> Yes</td></tr>
+			<tr><td><input type="radio" name="ans4" value="no" /> No</td></tr>
+		</table>
+		<br/>
+		
+		<label>5. Do <font color="#1b9e77">${inst5_1}</font> and <font color="#1b9e77">${inst5_2}</font> describe roughly the same event?</label>
+		
+		<table border="0" cellspacing="0" cellpadding="5" style="font-family: Verdana, Geneva, sans-serif; font-size:1em;">
+			<tr><td><input type="radio" name="ans5" value="yes" checked="checked" /> Yes</td></tr>
+			<tr><td><input type="radio" name="ans5" value="no" /> No</td></tr>
+		</table>
+		
+		<br/>
+		<hr/>
+		
+		<label>Would you like to add a comment?</label>&nbsp;
+		<textarea name="comment" id="comment" rows="3" cols="85" maxlength="250"></textarea>
+	</fieldset>
+	</section>
+
+	<!-- End Content Body -->
+	</div>
+	</section>
+
+	<!-- close container -->
+	<style type="text/css">fieldset { padding: 10px; background:#fbfbfb; border-radius:5px; margin-bottom:5px; }
+	</style>
+</body>
