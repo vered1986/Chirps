@@ -6,15 +6,14 @@ This is the code used in the paper:
 <b>"An Ever-growing Resource of Predicate Paraphrases"</b><br/>
 Vered Shwartz, Gabriel Stanovsky and Ido Dagan. (TBD).
 
-The resource can be found [here](http://u.cs.biu.ac.il/~nlp/resources/downloads/p3db/) (TBD).
-
 ***
 
-<b>To create a similar resource:</b>
+<b>The steps performed to create the resource:</b>
+
+We executed the script `get_daily_news_stream.sh` and now we can sit back and relax while the job is performed automatically for us... But if you want a detailed explanation step-by-step:
 
 1. Obtain news tweets:
-   Create a directory with tweet files (e.g. a different directory for each day), each file in the following format: `tweet_id\ttweet`.
-   One way to get these are by querying the [Twitter Search API](https://dev.twitter.com/rest/public/search) for news:
+   Querying the [Twitter Search API](https://dev.twitter.com/rest/public/search) for news:
 
    ```
    get_news_tweets_stream.py --consumer_key=<consumer_key> --consumer_secret=<consumer_secret>
@@ -27,29 +26,25 @@ The resource can be found [here](http://u.cs.biu.ac.il/~nlp/resources/downloads/
    Important note: we downloaded [TwitterSearch](https://github.com/ckoepp/TwitterSearch) and changed the code to add the
    news filter to the search URL. If you want to get news tweets, you should do the same.
 
-2. Extract propositions: 
+2. Extract propositions from the tweets:
    ```
    prop_extraction --in=[tweet_folder] --out=[prop_folder]
    ```
    
-3. Generate positive instances: for each proposition file, run: 
+3. Generate positive instances from the proposition file:
    ```
    get_corefering_predicates.py [tweets_file] [out_file]
    ```
 
 5. To package the resource:
 
-    * Generate the full resource file (remove the date field):
-     ```
-     cut -f2-13 positive/* > positive_instances.tsv
-     ```
+    ```
+    cat news_stream/positive/* | cut -f1,2,4,5,6,7,8,10,11,12,13,14 > resource
+    python -u package_resource.py resource [repository_dir]
+    ```
+    where `news_stream/positive/` is where we keep all the positive instances files. `cut` is used to remove the tweets, to comply with Twitter policy. `package_resource.py` updates the resource file under `[repository_dir]\resource` and pushes the changes.
 
-    * Generate a version without the tweets (only tweet IDs):
-     ```
-     cut -f1,3,4,5,6,7,9,10,11,12,13 positive_instances.tsv > positive_instances_without_tweets.tsv
-     ```
-
-6. To download the full resource:
+6. To restore the tweets:
 
    ```
    expand_resource.py --resource_file=<resource_file> --consumer_key=<consumer_key>
@@ -57,4 +52,4 @@ The resource can be found [here](http://u.cs.biu.ac.il/~nlp/resources/downloads/
         --access_token_secret=<access_token_secret>
    ```
 
-    where `--resource_file` is the path to the resource file without tweets (e.g. `resource_without_tweets.tsv` or the file in the packaged resource you downloaded).
+    where `--resource_file` is the path to the resource file without tweets (e.g. `resource\instances.tsv`).
