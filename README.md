@@ -12,7 +12,7 @@ Vered Shwartz, Gabriel Stanovsky and Ido Dagan. (TBD).
 
 We executed the script `get_daily_news_stream.sh` and now we can sit back and relax while the job is performed automatically for us... But if you want a detailed explanation step-by-step:
 
-1. Obtain news tweets:
+1. <b>Obtain news tweets:</b></br>
    Querying the [Twitter Search API](https://dev.twitter.com/rest/public/search) for news:
 
    ```
@@ -26,30 +26,20 @@ We executed the script `get_daily_news_stream.sh` and now we can sit back and re
    Important note: we downloaded [TwitterSearch](https://github.com/ckoepp/TwitterSearch) and changed the code to add the
    news filter to the search URL. If you want to get news tweets, you should do the same.
 
-2. Extract propositions from the tweets:
+2. <b>Extract propositions:</b></br>
    ```
    prop_extraction --in=[tweet_folder] --out=[prop_folder]
    ```
    
-3. Generate positive instances from the proposition file:
+3. <b>Generate positive instances:</b></br>
    ```
    get_corefering_predicates.py [tweets_file] [out_file]
    ```
 
-5. To package the resource:
+5. <b>Package the resource:</b></br>
 
     ```
     cat news_stream/positive/* | cut -f1,2,4,5,6,7,8,10,11,12,13,14 > resource
     python -u package_resource.py resource [repository_dir]
     ```
     where `news_stream/positive/` is where we keep all the positive instances files. `cut` is used to remove the tweets, to comply with Twitter policy. `package_resource.py` updates the resource file under `[repository_dir]\resource` and pushes the changes.
-
-6. To restore the tweets:
-
-   ```
-   expand_resource.py --resource_file=<resource_file> --consumer_key=<consumer_key>
-        --consumer_secret=<consumer_secret> --access_token=<access_token> 
-        --access_token_secret=<access_token_secret>
-   ```
-
-    where `--resource_file` is the path to the resource file without tweets (e.g. `resource\instances.tsv`).
