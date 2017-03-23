@@ -1,0 +1,4 @@
+2017-03-23.18-33-09.te-srv4.cs.biu.ac.il zip resource.zip *.tsv
+2017-03-23.18-33-24.te-srv4.cs.biu.ac.il rm resource.zip 
+2017-03-23.18-33-29.te-srv4.cs.biu.ac.il git pull
+2017-03-23.18-33-33.te-srv4.cs.biu.ac.il zip resource.zip *.tsv
