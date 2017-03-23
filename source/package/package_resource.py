@@ -24,7 +24,7 @@ def main():
     with codecs.open(resource_file, 'r', 'utf-8') as f_in:
         resource = [tuple(line.strip().split('\t')) for line in f_in]
 
-    with codecs.open(repository_dir + '/resource/instances.tsv', 'w', 'utf-8') as f_out:
+    with codecs.open(repository_dir + '/instances.tsv', 'w', 'utf-8') as f_out:
         for item in resource:
             print >> f_out, '\t'.join(item[1:])
 
@@ -42,7 +42,7 @@ def main():
     types_with_scores = [(key, count * len(types_by_date[key])) for key, count in types.most_common()]
     types_with_scores = sorted(types_with_scores, key=lambda x: x[1], reverse=True)
 
-    with codecs.open(repository_dir + '/resource/rules.tsv', 'w', 'utf-8') as f_out:
+    with codecs.open(repository_dir + '/rules.tsv', 'w', 'utf-8') as f_out:
         for key, score in types_with_scores:
             p1, p2 = key.split('###')
             print >> f_out, '\t'.join((p1, p2, str(types[key]), str(len(types_by_date[key]))))

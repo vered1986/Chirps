@@ -18,7 +18,9 @@ while true; do
   (python -u prop_extraction.py --in=news_stream/tweets/$last_file --out=news_stream/props/$last_file.prop > prop.log;
   python -u get_corefering_predicates.py news_stream/props/$last_file.prop news_stream/positive/$last_file;
   cat news_stream/positive/* | cut -f1,2,4,5,6,7,8,10,11,12,13,14 > resource;
-  python -u package_resource.py resource P3DB;
+  python -u package_resource.py resource resource_dir;
+  zip ~/Dropbox/resource/resource.zip resource_dir/*.tsv;
+  cp ~/Dropbox/resource/resource.zip P3DB/resource;
   git --git-dir=P3DB/.git --work-tree=P3DB/ commit -m "update resource" resource/*;
   git --git-dir=P3DB/.git --work-tree=P3DB/ push origin master) &
   
