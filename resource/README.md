@@ -1,6 +1,6 @@
 ## Predicate Paraphrase Database
 
-Important note: the resource should be updated every day. If the files in this directory are out of date, check the [Dropbox directory](https://www.dropbox.com/sh/m65mzg4v84zeghg/AAAHoiwk0bW-L8zwPhgBOAyya?dl=0).
+Important note: the resource should be updated every day. If the files in this directory are out of date, check the [Dropbox directory](https://www.dropbox.com/sh/hc1lobwcuo3pvie/AACVs2XRMEDsSlfvlz6Wa8H4a?dl=0).
 
 <hr/>
 
