@@ -13,13 +13,15 @@ def main():
 
     args = docopt("""Sample from the top K of each day and create batch instances.
 
-        Usage: sample_for_second_annotation_task.py <k> <out_file>
+        Usage: sample_for_second_annotation_task.py <k> <num_instances> <out_file>
 
-        <k>               k
+        <k>               k (as in top k)
+        <num_instances>   How many instances from each day.
         <out_file>        Batch instances csv out file.
     """)
 
     k = int(args['<k>'])
+    num_instances = int(args['<num_instances>'])
     out_file = args['<out_file>']
 
     types = defaultdict(list)
@@ -32,7 +34,7 @@ def main():
             with codecs.open(day + '/rules.tsv', 'r', 'utf-8') as f_in:
                 curr_top_k = [tuple(line.strip().split('\t')) for line in f_in][:k]
 
-            sample_types = random.sample(curr_top_k, 20)
+            sample_types = random.sample(curr_top_k, num_instances)
             [types['###'.join(sorted([p1, p2]))].append(int(day)) for (p1, p2, count, days) in sample_types]
 
             # Open the instances file

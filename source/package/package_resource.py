@@ -39,7 +39,9 @@ def main():
     [types_by_date['###'.join(sorted([pred1, pred2]))].add(date)
      for (date, tweet_id1, sf_pred1, pred1, sent1_a0, sent1_a1, tweet_id2, sf_pred2, pred2, sent2_a0, sent2_a1) in resource]
 
-    types_with_scores = [(key, count * len(types_by_date[key])) for key, count in types.most_common()]
+    # Give more importance to rules that occurred in more than one day
+    types_with_scores = [(key, count * (1 + len(types_by_date[key]) * 1.0 / len(types_by_date)))
+                         for key, count in types.most_common()]
     types_with_scores = sorted(types_with_scores, key=lambda x: x[1], reverse=True)
 
     with codecs.open(repository_dir + '/rules.tsv', 'w', 'utf-8') as f_out:

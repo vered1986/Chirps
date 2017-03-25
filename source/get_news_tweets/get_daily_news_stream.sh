@@ -2,6 +2,7 @@ consumer_key='YOUR_KEY_HERE'
 consumer_secret='YOUR_KEY_HERE'
 access_token='YOUR_KEY_HERE'
 access_token_secret='YOUR_KEY_HERE'
+dropbox_access_token='YOUR_KEY_HERE'
 
 while true; do 
 	
@@ -19,8 +20,9 @@ while true; do
   python -u get_corefering_predicates.py news_stream/props/$last_file.prop news_stream/positive/$last_file;
   cat news_stream/positive/* | cut -f1,2,4,5,6,7,8,10,11,12,13,14 > resource;
   python -u package_resource.py resource resource_dir;
-  zip ~/Dropbox/resource/resource.zip resource_dir/*.tsv;
-  cp ~/Dropbox/resource/resource.zip P3DB/resource;
+  zip resource_dir/resource.zip resource_dir/*.tsv;
+  python upload_to_dropbox.py $dropbox_access_token resource_dir;
+  cp resource_dir/resource.zip P3DB/resource;
   git --git-dir=P3DB/.git --work-tree=P3DB/ commit -m "update resource" resource/*;
   git --git-dir=P3DB/.git --work-tree=P3DB/ push origin master) &
   

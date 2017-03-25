@@ -1,6 +1,8 @@
 import codecs
 import random
 
+import numpy as np
+
 from docopt import docopt
 from collections import defaultdict
 
@@ -35,13 +37,20 @@ def main():
     types = [(p1, p2, count, days) for (p1, p2, count, days) in types if int(count) >= 5]
     print 'Sampling from %d types with at least 5 instances' % len(types)
 
-    # Split to num_bin bins
-    bins = list(chunks(types, num_bins))
+    # Split to num_bin bins. Each bin contains all the items that have higher scores
+    # than the low threshold of the bin. The last bin should contain all the resource (as
+    # long as there at least 5 instances).
+    scores = [int(count) * int(days) for (p1, p2, count, days) in types]
+    score_bins = np.flipud(np.linspace(5, 250, num=num_bins+1))
+    bins = [[item for j, item in enumerate(types) if scores[j] >= score_bins[i+1]] for i in range(num_bins)]
+    print 'Bins and number of items:', [(score_bins[bin+1], len(bins[bin])) for bin in range(num_bins)]
 
     # Sample num_ins from each bin
     samples = [random.sample(curr_bin, num_instances) for curr_bin in bins]
 
-    type_to_bin = { '###'.join(sorted([p1, p2])) : i for i, bin in enumerate(samples) for (p1, p2, count, days) in bin }
+    type_to_bin = defaultdict(list)
+    [type_to_bin['###'.join(sorted([p1, p2]))].append(int(i + 1)) for i, bin in enumerate(samples)
+     for (p1, p2, count, days) in bin]
 
     # Open the instances file
     with codecs.open(resource_dir + '/instances.tsv', 'r', 'utf-8') as f_in:
@@ -57,12 +66,13 @@ def main():
     with codecs.open(out_file, 'w', 'utf-8') as f_out:
 
         # Header
-        print >> f_out, '"' + '","'.join(('p1', 'p2', 'days', 'inst1_1', 'inst1_2', 'inst2_1', 'inst2_2',
+        print >> f_out, '"' + '","'.join(('p1', 'p2', 'bin', 'inst1_1', 'inst1_2', 'inst2_1', 'inst2_2',
                                           'inst3_1', 'inst3_2', 'inst4_1', 'inst4_2', 'inst5_1', 'inst5_2')) + '"'
 
-        for type, bin in type_to_bin.iteritems():
+        for type, bin_lst in type_to_bin.iteritems():
 
             p1, p2 = type.split('###')
+            curr_bins = '-'.join(map(str, bin_lst))
             sample_instances = random.sample(instances_by_type[type], 5)
 
             sample_instances = [(sf_p1.replace('{a0}', "<font color='#d95f02'>%s</font>" % s1_a0).
@@ -73,18 +83,8 @@ def main():
 
             sample_instances = [item for lst in sample_instances for item in lst]
 
-            print >> f_out, '"' + '","'.join([p1.replace('"', "''"), p2.replace('"', "''"), str(bin + 1)] +
+            print >> f_out, '"' + '","'.join([p1.replace('"', "''"), p2.replace('"', "''"), curr_bins] +
                                              sample_instances) + '"'
-
-
-def chunks(l, n):
-    """
-    Yield n successive chunks from l.
-    """
-    new_n = int(len(l) / n)
-    for i in xrange(0, n-1):
-        yield l[i*new_n:i*new_n+new_n]
-    yield l[n*new_n-new_n:]
 
 
 

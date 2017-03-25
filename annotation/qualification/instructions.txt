@@ -1,0 +1,2 @@
+In this task, you are presented with two texts. You should decide whether the two texts describe the same event.
+For example: <font color='#d95f02'>Intel</font> <font color="#1b9e77">purchased</font> <font color='#7570b3'>Mobileye</font> describes the same event as <font color='#7570b3'>Mobileye</font> <font color="#1b9e77">sold to</font> <font color='#d95f02'>Intel</font>. In your answer, please focus on the action (e.g. <font color="#1b9e77">purchase</font>) and ignore small problems with the arguments.
