@@ -1,5 +1,5 @@
-# P^3DB
-## Predicate Paraphrase Database
+# Chirps
+## Predicate Paraphrases From Twitter
 
 This is the code used in the paper:
 
