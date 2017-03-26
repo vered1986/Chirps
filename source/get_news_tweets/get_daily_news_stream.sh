@@ -3,6 +3,7 @@ consumer_secret='YOUR_KEY_HERE'
 access_token='YOUR_KEY_HERE'
 access_token_secret='YOUR_KEY_HERE'
 dropbox_access_token='YOUR_KEY_HERE'
+repository_dir='REPOSITORY_DIR'
 
 while true; do 
 	
@@ -22,9 +23,9 @@ while true; do
   python -u package_resource.py resource resource_dir;
   zip resource_dir/resource.zip resource_dir/*.tsv;
   python upload_to_dropbox.py $dropbox_access_token resource_dir;
-  cp resource_dir/resource.zip P3DB/resource;
-  git --git-dir=P3DB/.git --work-tree=P3DB/ commit -m "update resource" resource/*;
-  git --git-dir=P3DB/.git --work-tree=P3DB/ push origin master) &
+  cp resource_dir/resource.zip $repository_dir/resource;
+  git --git-dir=$repository_dir/.git --work-tree=$repository_dir/ commit -m "update resource" resource/*;
+  git --git-dir=$repository_dir/.git --work-tree=$repository_dir/ push origin master) &
   
   # Sleep before checking again...
   sleep 60
