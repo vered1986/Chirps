@@ -20,7 +20,7 @@ def main():
 
     client = DropboxClient(access_token)
     file = open(resource_dir + '/resource.zip', 'rb')
-    client.put_file('resource.zip', file)
+    client.put_file('resource.zip', file, overwrite=True)
 
 
 if __name__ == '__main__':
