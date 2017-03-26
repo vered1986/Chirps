@@ -40,6 +40,8 @@ def main():
     print
 
     # Compute accuracy for each bin
+    # keys_by_bin = { 1 : keys_by_bin[1] + keys_by_bin[2], 2 : keys_by_bin[3], 3 : keys_by_bin[4] }
+
     for bin in keys_by_bin.keys():
 
         curr_results = { key : results[key] for key in keys_by_bin[bin] }
@@ -81,14 +83,18 @@ def load_results(result_file):
         # Input fields
         p1 = row['Input.p1']
         p2 = row['Input.p2']
-        bin = row['Input.bin']
+        bins = row['Input.bin']
 
         # Answer fields
         answer = any([row['Answer.ans%d' % (i + 1)] == 'yes' for i in range(5)])
         comment = row['Answer.comment']
 
         key = (p1, p2)
-        keys_by_bin[bin].append(key)
+
+        bins = map(int, bins.split('-'))
+
+        for bin in bins:
+            keys_by_bin[bin].append(key)
 
         if key not in worker_answers.keys():
             worker_answers[key] = {}
@@ -114,7 +120,7 @@ def cohens_kappa(results, workers):
     curr_workers = answers_per_worker.keys()
     worker_pairs = [(worker1, worker2) for worker1 in curr_workers for worker2 in curr_workers if worker1 != worker2]
 
-    label_index = { 'yes' : 1, 'no' : 0 }
+    label_index = { True : 1, False : 0 }
     pairwise_kappa = { worker_id : { } for worker_id in answers_per_worker.keys() }
 
     # Compute pairwise Kappa

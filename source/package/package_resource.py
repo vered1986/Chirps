@@ -40,7 +40,8 @@ def main():
      for (date, tweet_id1, sf_pred1, pred1, sent1_a0, sent1_a1, tweet_id2, sf_pred2, pred2, sent2_a0, sent2_a1) in resource]
 
     # Give more importance to rules that occurred in more than one day
-    types_with_scores = [(key, count * (1 + len(types_by_date[key]) * 1.0 / len(types_by_date)))
+    number_of_days = len(set([v for k, values in types_by_date.iteritems() for v in values]))
+    types_with_scores = [(key, count * (1 + len(types_by_date[key]) * 1.0 / number_of_days))
                          for key, count in types.most_common()]
     types_with_scores = sorted(types_with_scores, key=lambda x: x[1], reverse=True)
 

@@ -1,8 +1,6 @@
 import codecs
 import random
 
-import numpy as np
-
 from docopt import docopt
 from collections import defaultdict
 
@@ -41,7 +39,8 @@ def main():
     # than the low threshold of the bin. The last bin should contain all the resource (as
     # long as there at least 5 instances).
     scores = [int(count) * int(days) for (p1, p2, count, days) in types]
-    score_bins = np.flipud(np.linspace(5, 250, num=num_bins+1))
+    # score_bins = np.flipud(np.linspace(5, 250, num=num_bins+1))
+    score_bins = [1000, 100, 50, 20, 5]
     bins = [[item for j, item in enumerate(types) if scores[j] >= score_bins[i+1]] for i in range(num_bins)]
     print 'Bins and number of items:', [(score_bins[bin+1], len(bins[bin])) for bin in range(num_bins)]
 
