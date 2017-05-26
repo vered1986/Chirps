@@ -3,9 +3,8 @@
 
 This is the code used in the paper:
 
-<b>"An Ever-growing Resource of Predicate Paraphrases"</b><br/>
-Vered Shwartz, Gabriel Stanovsky and Ido Dagan. (TBD).
-
+<b>"Acquiring Predicate Paraphrases from News Tweets"</b><br/>
+Vered Shwartz, Gabriel Stanovsky and Ido Dagan. *SEM 2017.
 ***
 
 <b>The steps performed to create the resource:</b>
