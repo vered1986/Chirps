@@ -5,8 +5,8 @@ import boto.mturk.question as mt_q
 def main():
 
     # Connect to MTurk
-    ACCESS_ID ='AKIAIFPEXD2UB7P3UILQ'
-    SECRET_KEY = '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'
+    ACCESS_ID ='[ACCESS_KEY]'
+    SECRET_KEY = '[SECRET_KEY]'
     # HOST = 'mechanicalturk.sandbox.amazonaws.com'
     HOST = 'mechanicalturk.amazonaws.com'
 
