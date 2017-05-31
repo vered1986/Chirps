@@ -24,6 +24,7 @@ while true; do
   zip resource_dir/resource.zip resource_dir/*.tsv;
   python upload_to_dropbox.py $dropbox_access_token resource_dir;
   cp resource_dir/resource.zip $repository_dir/resource;
+  git --git-dir=$repository_dir/.git pull;
   git --git-dir=$repository_dir/.git --work-tree=$repository_dir/ commit -m "update resource; #instances: `wc -l instances.tsv`; #rules: `wc -l rules.tsv`" resource/*;
   git --git-dir=$repository_dir/.git --work-tree=$repository_dir/ push origin master) &
   
