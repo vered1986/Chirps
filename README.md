@@ -29,6 +29,7 @@ We executed the script `get_daily_news_stream.sh` and now we can sit back and re
    ```
    prop_extraction --in=[tweet_folder] --out=[prop_folder]
    ```
+   **Note**: You can also install our proposition extraction as a [stand-alone tool](https://github.com/gabrielStanovsky/template-oie).
    
 3. <b>Generate positive instances:</b></br>
    ```
