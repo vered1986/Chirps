@@ -1,6 +1,6 @@
 ## Predicate Paraphrase Database
 
-### Update (20-08-2017): the resource files are now too large for github. Please take them from the [Dropbox directory](https://www.dropbox.com/s/tq8a68443ff0i2y/resource.zip?dl=0).
+### Update (20-08-2017): the resource files are now too large for github. Please take them from the [Dropbox directory](https://www.dropbox.com/sh/1zg8z3egjnrt5l4/AADhvIh39DOregP2XD_IJ6vua?dl=0).
 
 <hr/>
 
