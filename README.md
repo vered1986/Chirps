@@ -4,7 +4,7 @@
 This is the code used in the paper:
 
 <b>"Acquiring Predicate Paraphrases from News Tweets"</b><br/>
-Vered Shwartz, Gabriel Stanovsky and Ido Dagan. *SEM 2017. [link](http://u.cs.biu.ac.il/~havivv/papers/twitter_pred.pdf)
+Vered Shwartz, Gabriel Stanovsky and Ido Dagan. *SEM 2017. [link](http://aclweb.org/anthology/S/S17/S17-1019.pdf)
 ***
 
 <b>The steps performed to create the resource:</b>
