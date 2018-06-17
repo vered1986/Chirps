@@ -56,3 +56,7 @@ def main():
         os.makedirs('expanded')
 
     save_to_file(expanded_resource, "expanded/resource.tsv")
+
+
+if __name__ == '__main__':
+    main()
